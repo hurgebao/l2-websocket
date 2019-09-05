@@ -15,9 +15,17 @@
         function connect() {
             var socket = new SockJS("/queueServer");
             stompClient = Stomp.over(socket);
-            stompClient.connect({}, function(frame) {
+            stompClient.heartbeat.outgoing = 5000;
+            stompClient.heartbeat.incoming = 5000;
+
+            var headers = {
+                login: 'mylogin',
+                passcode: 'mypasscode',
+                // additional header
+                'client-id': 'my-client-id'
+            };
+            stompClient.connect(headers, function(frame) {
                 setConnected(true);
-                console.log('Connected: ' + frame);
                 stompClient.subscribe('/user/'+document.getElementById('user').value+'/message', function(response){
                     var response1 = document.getElementById('response');
                     var p = document.createElement('p');
@@ -30,7 +38,9 @@
 
         function disconnect() {
             if (stompClient != null) {
-                stompClient.disconnect();
+                stompClient.disconnect(function(){
+                    console.log("连接断开。。");
+                });
             }
             setConnected(false);
             console.log("Disconnected");
