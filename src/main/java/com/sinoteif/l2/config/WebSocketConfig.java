@@ -1,12 +1,21 @@
 package com.sinoteif.l2.config;
 
+import com.sinoteif.l2.interceptor.SocketChannelInterceptor;
+import com.sinoteif.l2.interceptor.WebSocketHandShakeIntercepter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.HandshakeInterceptor;
+
+import java.util.Map;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -14,12 +23,24 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic","/user");//topicÓÃÀ´¹ã²¥ userÓÃÀ´ÊµÏÖp2p
+        registry.enableSimpleBroker("/topic","/user");//topicç”¨æ¥å¹¿æ’­ userç”¨æ¥å®ç°p2p
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/webServer").withSockJS();
-        registry.addEndpoint("/queueServer").withSockJS();//×¢²áÁ½¸öSTOMPµÄendpoint£¬·Ö±ğÓÃÓÚ¹ã²¥ºÍµã¶Ôµã
+        registry.addEndpoint("/webServer").addInterceptors(new WebSocketHandShakeIntercepter()).withSockJS();
+        registry.addEndpoint("/queueServer").addInterceptors(new WebSocketHandShakeIntercepter()).withSockJS();//æ³¨å†Œä¸¤ä¸ªSTOMPçš„endpointï¼Œåˆ†åˆ«ç”¨äºå¹¿æ’­å’Œç‚¹å¯¹ç‚¹
+    }
+    /**
+     * æ³¨å†ŒChannelæ‹¦æˆªå™¨
+     */
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new SocketChannelInterceptor());
+    }
+
+    @Override
+    public void configureClientOutboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new SocketChannelInterceptor());
     }
 }

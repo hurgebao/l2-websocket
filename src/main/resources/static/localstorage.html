@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript">
+        if(! window.localStorage){
+            alert("浏览器不支持localstorage");
+        }
+        if(! window.sessionStorage){
+            alert("浏览器不支持sessionStorage");
+        }
+        function click1(){
+            if(localStorage.num){
+                localStorage.num=Number(localStorage.num)+1;
+            }else{
+                localStorage.num=1;
+            }
+            document.getElementById("num1").innerHTML="点击了"+localStorage.num+"次";
+        }
+        function click2(){
+            if(sessionStorage.num){
+                sessionStorage.num=Number(sessionStorage.num)+1;
+            }else{
+                sessionStorage.num=1;
+            }
+            document.getElementById("num2").innerHTML="点击了"+sessionStorage.num+"次";
+        }
+    </script>
+</head>
+<body>
+    <input type="button" value="点击1" onclick="click1()"/>
+    <input type="button" value="点击2" onclick="click2()"/>
+
+    <p id="num1"></p>
+    <p id="num2"></p>
+
+</body>
+</html>
